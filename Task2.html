@@ -1,0 +1,180 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>To-Do List</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>To-Do List</h1>
+        <div class="add-task">
+            <input type="text" id="taskInput" placeholder="Add new task..." />
+            <button onclick="addTask()">Add Task</button>
+        </div>
+        <ul id="taskList">
+            <!-- Tasks will be added here dynamically -->
+        </ul>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+<style>
+body {
+    background-image: url('image7.jpg');
+    background-repeat: no-repeat;
+    font-family: Arial, sans-serif;
+    background-size: cover;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.container {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 400px;
+}
+
+h1 {
+    margin-top: 0;
+    font-size: 24px;
+}
+
+.add-task {
+    display: flex;
+    gap: 10px;
+}
+
+#taskInput {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0 0;
+}
+
+li {
+    display: flex;
+    align-items: center;
+    background-color: #f9f9f9;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 10px;
+}
+
+li.completed {
+    text-decoration: line-through;
+    color: #aaa;
+}
+
+.task-text {
+    flex: 1;
+    margin-right: 10px;
+}
+
+button.edit, button.delete {
+    background-color: #28a745;
+    border: none;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+}
+
+button.edit:hover {
+    background-color: #218838;
+}
+
+button.delete {
+    background-color: #dc3545;
+}
+
+button.delete:hover {
+    background-color: #c82333;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    loadTasks();
+});
+
+function loadTasks() {
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const taskList = document.getElementById('taskList');
+    taskList.innerHTML = '';
+    tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        li.className = task.completed ? 'completed' : '';
+        li.innerHTML = `
+            <span class="task-text">${task.text}</span>
+            <button class="edit" onclick="editTask(${index})">Edit</button>
+            <button class="delete" onclick="deleteTask(${index})">Delete</button>
+            <button onclick="toggleComplete(${index})">${task.completed ? 'Undo' : 'Complete'}</button>
+        `;
+        taskList.appendChild(li);
+    });
+}
+
+function addTask() {
+    const taskInput = document.getElementById('taskInput');
+    const taskText = taskInput.value.trim();
+    if (taskText === '') return;
+    
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks.push({ text: taskText, completed: false });
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    taskInput.value = '';
+    loadTasks();
+}
+
+function editTask(index) {
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    const newTaskText = prompt('Edit task:', tasks[index].text);
+    if (newTaskText !== null && newTaskText.trim() !== '') {
+        tasks[index].text = newTaskText.trim();
+        localStorage.setItem('tasks', JSON.stringify(tasks));
+        loadTasks();
+    }
+}
+
+function deleteTask(index) {
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks.splice(index, 1);
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    loadTasks();
+}
+
+function toggleComplete(index) {
+    const tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+    tasks[index].completed = !tasks[index].completed;
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+    loadTasks();
+}
+</script>
